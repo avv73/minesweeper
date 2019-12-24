@@ -13,4 +13,5 @@ public final class Messages {
 	public static final String BOMBS_BIGGER_SCALE = "Bombs cannot be bigger than scale!";
 	public static final String COMMAND_CHECK = "check";
 	public static final String COMMAND_FLAG = "flag";
+	public static final String STARTUP = "Please enter difficulty: (beginner, advanced, professional, custom):"; 
 }

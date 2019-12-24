@@ -12,22 +12,23 @@ public class GameEngine implements IGameEngine {
 	//private boolean[][] flags; ???? Can't risk to implement it without the clear assignment.
 	
 	private int bombCount; // do I need this??
-	private int scale;
+	private int rows;
+	private int columns;
 	
 	private boolean isGameOver;
 	
-	private Random rand; // seed??
+	private Random rand;
 	
-	public GameEngine(int scale, int bombCount) {
-		validateInput(scale, bombCount);
+	public GameEngine(int rows, int columns, int bombCount) {
 		rand = new Random();
 		
 		this.bombCount = bombCount;
-		this.scale = scale;
+		this.rows = rows;
+		this.columns = columns;
 		
 		isGameOver = false;
 		
-		intializeBoard(scale);
+		intializeBoard(rows, columns);
 		setBombs(bombCount);
 		setAdjacentCells();
 	}
@@ -44,7 +45,7 @@ public class GameEngine implements IGameEngine {
 	
 	@Override
 	public void check(int row, int column) {
-		if (row < 0 || row >= board.length || column < 0 || column >= board.length) {
+		if (row < 0 || row >= rows || column < 0 || column >= columns) {
 			throw new IllegalArgumentException(Messages.INVALID_DATA);
 		}
 		
@@ -54,12 +55,10 @@ public class GameEngine implements IGameEngine {
 			if (isEqualToBomb(board[row][column])) {
 				isGameOver = true;
 				board[row][column] = BoardCodes.BOMB_CLICKED;
-				setAllToChecked(); // do I need this??
+				setAllToChecked();
 			} 
 			
-			// recursive check..
-		} else {
-			//???
+			// TODO: Implement recursive checking.
 		}
 		
 	}
@@ -75,20 +74,20 @@ public class GameEngine implements IGameEngine {
 		return isGameOver;
 	}
 	
-	private void intializeBoard(int scale) {
-		board = new int[scale][];
-		boardChecked = new boolean[scale][];
+	private void intializeBoard(int rows, int columns) {
+		board = new int[rows][];
+		boardChecked = new boolean[rows][];
 		
-		for (int i = 0; i < scale; i++) {
-			board[i] = new int[scale];
-			boardChecked[i] = new boolean[scale];
+		for (int i = 0; i < rows; i++) {
+			board[i] = new int[columns];
+			boardChecked[i] = new boolean[columns];
 		}
 	}
 	
 	private void setBombs(int bombsCount) {
 		for (int i = 0; i < bombsCount; i++) {
-			int row = rand.nextInt(scale);
-			int column = rand.nextInt(scale);
+			int row = rand.nextInt(rows);
+			int column = rand.nextInt(columns);
 			
 			if (board[row][column] == BoardCodes.BOMB) {
 				i--;
@@ -99,49 +98,47 @@ public class GameEngine implements IGameEngine {
 		}
 	}
 	
-	private void validateInput(int scale, int bombCount) {
-		if (scale < 0 || bombCount < 0) {
-			throw new IllegalArgumentException(Messages.INVALID_DATA);
-		}
-		if (bombCount > scale) {
-			throw new IllegalArgumentException(Messages.BOMBS_BIGGER_SCALE);
-		}	
-	}
-	
 	private void setAdjacentCells() {
-		for (int i = 0; i < board.length; i++) {
-			for(int k = 0; k < board.length; k++) {
-				try {
-					if (isEqualToBomb(board[i - 1][k - 1])) {
+		for (int i = 0; i < rows; i++) {
+			for (int k = 0; k < columns; k++) {
+					if (isEqualToBomb(board[i][k])) {
+						continue;
+					}
+				
+					if (i - 1 >= 0) {
+						if (k - 1 >= 0 && isEqualToBomb(board[i - 1][k - 1])) {
+							board[i][k]++;
+						}
+						
+						if (isEqualToBomb(board[i - 1][k])) {
+							board[i][k]++;
+						}
+						
+						if (k + 1 < columns && isEqualToBomb(board[i - 1][k + 1])) {
+							board[i][k]++;
+						}
+					}
+					
+					if (k - 1 >= 0 && isEqualToBomb(board[i][k - 1])) {
 						board[i][k]++;
 					}
-					if (isEqualToBomb(board[i - 1][k])) {
-						board[i][k]++;
-					}
-					if (isEqualToBomb(board[i - 1][k + 1])) {
-						board[i][k]++;
-					}
-					if (isEqualToBomb(board[i][k - 1])) {
-						board[i][k]++;
-					}
-					if (isEqualToBomb(board[i][k + 1])) {
-						board[i][k]++;
-					}
-					if (isEqualToBomb(board[i + 1][k - 1])) {
-						board[i][k]++;
-					}
-					if (isEqualToBomb(board[i + 1][k])) {
-						board[i][k]++;
-					}
-					if (isEqualToBomb(board[i + 1][k + 1])) {
+					if (k + 1 < columns && isEqualToBomb(board[i][k + 1])) {
 						board[i][k]++;
 					}
 					
-				} catch (ArrayIndexOutOfBoundsException e) {
-					
-				} catch (Exception x) {
-					throw x;
-				}
+					if (i + 1 < rows) {
+						if (k - 1 >= 0 && isEqualToBomb(board[i + 1][k - 1])) {
+							board[i][k]++;
+						}
+						
+						if (isEqualToBomb(board[i + 1][k])) {
+							board[i][k]++;
+						}
+						
+						if (k + 1 < columns && isEqualToBomb(board[i + 1][k + 1])) {
+							board[i][k]++;
+						}
+					}
 			}
 		}
 	}
@@ -151,8 +148,8 @@ public class GameEngine implements IGameEngine {
 	}
 	
 	private void setAllToChecked() {
-		for (int i = 0; i < board.length; i++) {
-			for (int j = 0; j < board.length; j++) {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
 				boardChecked[i][j] = true;
 			}
 		}

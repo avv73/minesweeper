@@ -21,11 +21,12 @@ public class InterfaceController implements IInterfaceController {
 		int[][] board = gameEngine.getBoard();
 		boolean[][] checked = gameEngine.getCheckedBoard();
 				
-		printer.clear(board.length);	
+		printHeader(board.length);
 		
 		for (int i = 0; i < board.length; i++) {
-			for (int k = 0; k < board.length; k++) {
-				printer.print(Symbols.SEPERATOR);
+			printer.print((i + 1) + " | ");
+			
+			for (int k = 0; k < board[0].length; k++) {
 				
 				if (checked[i][k]) {
 					switch(board[i][k]) {
@@ -35,7 +36,7 @@ public class InterfaceController implements IInterfaceController {
 					case 3: printer.print(Symbols.THREE); break;
 					case 4: printer.print(Symbols.FOUR); break;
 					case -1: printer.print(Symbols.BOMB); break;
-					case -2: printer.print(Symbols.FLAG); break;
+					//case -2: printer.print(Symbols.FLAG); break;
 					case -3: printer.print(Symbols.BOMB_CLICKED); break;
 					default: throw new IllegalArgumentException(Messages.UNRECOGNIZED_SYMBOL); 
 					}
@@ -43,11 +44,10 @@ public class InterfaceController implements IInterfaceController {
 					printer.print(Symbols.CLOSED);
 				}
 				
-				printer.print(Symbols.SEPERATOR);
+				printer.print(" ");
 			}
 			
 			printer.printLine("");
-			printer.printLine(new String(new char[board.length * 3]).replace('\0', Symbols.TERMINATOR.charAt(0)));
 		}
 		
 		
@@ -61,7 +61,9 @@ public class InterfaceController implements IInterfaceController {
 		
 		String command = "";  
 		int row = 0;
-		int column = 0;
+		String column = "";
+		int columnActual = 0;
+		
 		while (true) {
 			printer.printLine(Messages.PARSER_INPUT_MESSAGE);
 			String[] commandTokens = reader.readInput().split(" ");
@@ -69,16 +71,22 @@ public class InterfaceController implements IInterfaceController {
 			try {
 				command = commandTokens[0].toLowerCase();
 				row = Integer.parseInt(commandTokens[1]);
-				column = Integer.parseInt(commandTokens[2]);
+				column = commandTokens[2].toLowerCase();
+				
+				if (column.length() > 1) {
+					continue;
+				}
+				
+				columnActual = column.charAt(0) - 97;		
 			} catch (Exception e) {
 				continue;
 			}
 			
-			if (command == Messages.COMMAND_CHECK) {
-				gameEngine.check(row, column);
+			if (command.equals(Messages.COMMAND_CHECK)) {
+				gameEngine.check(row, columnActual);
 				break;
-			} else if (command == Messages.COMMAND_FLAG) {
-				gameEngine.flag(row, column);
+			} else if (command.equals(Messages.COMMAND_FLAG)) {
+				gameEngine.flag(row, columnActual);
 				break;
 			}
 		} 
@@ -94,5 +102,23 @@ public class InterfaceController implements IInterfaceController {
 		if (printer == null || reader == null || gameEngine == null) {
 			throw new IllegalArgumentException(Messages.ARGUMENTS_NULL);
 		}
+	}
+	
+	private void printHeader(int length) {
+		printer.clear(length*2);	
+		
+		printer.print("    ");
+		for (int i = 0; i < length; i++) {
+			printer.print((char)(65 + i) + " ");
+		}
+		
+		printer.printLine("");
+		
+		printer.print("   ");
+		for (int i = 0; i < length*2; i++) {
+			printer.print("-");
+		}		
+		
+		printer.printLine("");	
 	}
 }
