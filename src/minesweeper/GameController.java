@@ -15,10 +15,12 @@ public class GameController implements IGameController {
 	@Override
 	public void start() {
 		// try-catch block here..
-		while(interfaceController.isOpen()) {
+		while (interfaceController.isOpen()) {
 			interfaceController.actualize();
 			interfaceController.parseCommand();
 		}
+		
+		interfaceController.actualize();
 	}
 	
 	private void validateInput(IInterfaceController interfaceController) {

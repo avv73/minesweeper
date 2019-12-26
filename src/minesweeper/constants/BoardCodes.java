@@ -7,6 +7,5 @@ public final class BoardCodes {
 	
 	public static final int BOMB = -1;
 	public static final int BOMB_CLICKED =  -3;
-	public static final int FLAG = -2;
 	
 }

@@ -20,25 +20,34 @@ public class InterfaceController implements IInterfaceController {
 	public void actualize() {
 		int[][] board = gameEngine.getBoard();
 		boolean[][] checked = gameEngine.getCheckedBoard();
-				
-		printHeader(board.length);
+		boolean[][]	flags = gameEngine.getFlagsBoard();
+
+		printHeader(board.length, board[0].length);
 		
 		for (int i = 0; i < board.length; i++) {
-			printer.print((i + 1) + " | ");
+			if (i + 1 < 10) {
+				printer.print((i + 1) + " | ");
+			} else {
+				printer.print((i + 1) + "| ");
+			}
 			
 			for (int k = 0; k < board[0].length; k++) {
-				
-				if (checked[i][k]) {
+				if (flags[i][k]) {
+					printer.print(Symbols.FLAG);
+				} else if (checked[i][k]) {
 					switch(board[i][k]) {
-					case 0: printer.print(Symbols.EMPTY); break;
-					case 1: printer.print(Symbols.ONE); break;
-					case 2: printer.print(Symbols.TWO); break;
-					case 3: printer.print(Symbols.THREE); break;
-					case 4: printer.print(Symbols.FOUR); break;
-					case -1: printer.print(Symbols.BOMB); break;
-					//case -2: printer.print(Symbols.FLAG); break;
-					case -3: printer.print(Symbols.BOMB_CLICKED); break;
-					default: throw new IllegalArgumentException(Messages.UNRECOGNIZED_SYMBOL); 
+						case 0: printer.print(Symbols.EMPTY); break;
+						case 1: printer.print(Symbols.ONE); break;
+						case 2: printer.print(Symbols.TWO); break;
+						case 3: printer.print(Symbols.THREE); break;
+						case 4: printer.print(Symbols.FOUR); break;
+						case 5: printer.print(Symbols.FIVE); break;
+						case 6: printer.print(Symbols.SIX); break;
+						case 7: printer.print(Symbols.SEVEN); break;
+						case 8: printer.print(Symbols.EIGHT); break;
+						case -1: printer.print(Symbols.BOMB); break;
+						case -3: printer.print(Symbols.BOMB_CLICKED); break;
+						default: throw new IllegalArgumentException(Messages.UNRECOGNIZED_SYMBOL); 
 					}
 				} else {
 					printer.print(Symbols.CLOSED);
@@ -51,6 +60,11 @@ public class InterfaceController implements IInterfaceController {
 		}
 		
 		
+		if (gameEngine.isGameWon()) {
+			printer.printLine("You have won!");
+		} else if (gameEngine.isGameOver()) {
+			printer.printLine("You have lost!");
+		}
 	}
 
 	@Override
@@ -83,10 +97,10 @@ public class InterfaceController implements IInterfaceController {
 			}
 			
 			if (command.equals(Messages.COMMAND_CHECK)) {
-				gameEngine.check(row, columnActual);
+				gameEngine.check(row - 1, columnActual);
 				break;
 			} else if (command.equals(Messages.COMMAND_FLAG)) {
-				gameEngine.flag(row, columnActual);
+				gameEngine.flag(row - 1, columnActual);
 				break;
 			}
 		} 
@@ -95,7 +109,7 @@ public class InterfaceController implements IInterfaceController {
 
 	@Override
 	public boolean isOpen() {
-		return !gameEngine.isGameOver();
+		return !gameEngine.isGameWon() && !gameEngine.isGameOver();
 	}
 	
 	private void validateInput(IPrinter printer, IReader reader, IGameEngine gameEngine) {
@@ -104,18 +118,18 @@ public class InterfaceController implements IInterfaceController {
 		}
 	}
 	
-	private void printHeader(int length) {
-		printer.clear(length*2);	
+	private void printHeader(int lengthRows, int lengthColumns) {
+		printer.clear(lengthRows*2);	
 		
 		printer.print("    ");
-		for (int i = 0; i < length; i++) {
+		for (int i = 0; i < lengthColumns; i++) {
 			printer.print((char)(65 + i) + " ");
 		}
 		
 		printer.printLine("");
 		
 		printer.print("   ");
-		for (int i = 0; i < length*2; i++) {
+		for (int i = 0; i < lengthColumns*2; i++) {
 			printer.print("-");
 		}		
 		

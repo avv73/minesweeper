@@ -5,7 +5,9 @@ public interface IGameEngine {
 	void flag(int row, int column);
 	
 	boolean isGameOver();
+	boolean isGameWon();
 	
 	boolean[][]	getCheckedBoard();
-	int[][] getBoard();
+	boolean[][] getFlagsBoard();
+	int[][] getBoard();	
 }

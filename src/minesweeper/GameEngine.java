@@ -9,7 +9,7 @@ import minesweeper.constants.Messages;
 public class GameEngine implements IGameEngine {
 	private int[][] board; 
 	private boolean[][] boardChecked;
-	//private boolean[][] flags; ???? Can't risk to implement it without the clear assignment.
+	private boolean[][] flags;
 	
 	private int bombCount; // do I need this??
 	private int rows;
@@ -44,29 +44,38 @@ public class GameEngine implements IGameEngine {
 	}
 	
 	@Override
+	public boolean[][] getFlagsBoard() {
+		return Arrays.copyOf(flags, flags.length);
+	}
+	
+	@Override
 	public void check(int row, int column) {
 		if (row < 0 || row >= rows || column < 0 || column >= columns) {
 			throw new IllegalArgumentException(Messages.INVALID_DATA);
 		}
 		
-		if (!boardChecked[row][column]) {
-			boardChecked[row][column] = true;
-			
+		if (!boardChecked[row][column] && !flags[row][column]) {		
 			if (isEqualToBomb(board[row][column])) {
 				isGameOver = true;
+				setBombsToChecked();
 				board[row][column] = BoardCodes.BOMB_CLICKED;
-				setAllToChecked();
 			} 
-			
-			// TODO: Implement recursive checking.
+			else {	
+				checkForEmpty(row, column);
+			}		
 		}
 		
 	}
 
 	@Override
 	public void flag(int row, int column) {
-		// TODO Auto-generated method stub
+		if (row < 0 || row >= rows || column < 0 || column >= columns) {
+			throw new IllegalArgumentException(Messages.INVALID_DATA);
+		}
 		
+		if (!boardChecked[row][column]) {
+			flags[row][column] = !flags[row][column];
+		}
 	}
 	
 	@Override
@@ -74,13 +83,28 @@ public class GameEngine implements IGameEngine {
 		return isGameOver;
 	}
 	
+	@Override
+	public boolean isGameWon() {		
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				if (!boardChecked[i][j] && !isEqualToBomb(board[i][j])) {
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+	
 	private void intializeBoard(int rows, int columns) {
 		board = new int[rows][];
 		boardChecked = new boolean[rows][];
+		flags = new boolean[rows][];
 		
 		for (int i = 0; i < rows; i++) {
 			board[i] = new int[columns];
 			boardChecked[i] = new boolean[columns];
+			flags[i] = new boolean[columns];
 		}
 	}
 	
@@ -152,6 +176,41 @@ public class GameEngine implements IGameEngine {
 			for (int j = 0; j < columns; j++) {
 				boardChecked[i][j] = true;
 			}
+		}
+	}
+	
+	private void setBombsToChecked() {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				if (isEqualToBomb(board[i][j])) {
+					boardChecked[i][j] = true;
+				}
+			}
+		}
+	}
+	
+	private void checkForEmpty(int row, int column) {
+		if (row < 0 || row >= rows || column < 0 || column >= columns) {
+			return;
+		}
+		
+		if (!boardChecked[row][column] && !flags[row][column]) {
+			if (!isEqualToBomb(board[row][column])) {
+				boardChecked[row][column] = true;
+				
+				if (board[row][column] == 0) { 
+					// Check adjacent cells if they are empty.
+					checkForEmpty(row - 1, column - 1);
+					checkForEmpty(row - 1, column);
+					checkForEmpty(row - 1, column + 1);
+					checkForEmpty(row, column - 1);
+					checkForEmpty(row, column + 1);
+					checkForEmpty(row + 1, column - 1);
+					checkForEmpty(row + 1, column);
+					checkForEmpty(row + 1, column + 1);
+				}
+			}
+			
 		}
 	}
 }
