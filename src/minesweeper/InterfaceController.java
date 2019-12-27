@@ -2,18 +2,21 @@ package minesweeper;
 
 import minesweeper.constants.*;
 import minesweeper.contracts.*;
+import java.util.concurrent.TimeUnit;
 
 public class InterfaceController implements IInterfaceController {
 	private IPrinter printer;
 	private IReader reader;
 	private IGameEngine gameEngine;
+	private ITimer timer;
 	
-	public InterfaceController(IPrinter printer, IReader reader, IGameEngine gameEngine) {
+	public InterfaceController(IPrinter printer, IReader reader, IGameEngine gameEngine, ITimer timer) {
 		validateInput(printer, reader, gameEngine);
 		
 		this.printer = printer;
 		this.reader = reader;
 		this.gameEngine = gameEngine;
+		this.timer = timer;
 	}
 
 	@Override
@@ -48,7 +51,7 @@ public class InterfaceController implements IInterfaceController {
 						case -1: printer.print(Symbols.BOMB); break;
 						case -3: printer.print(Symbols.BOMB_CLICKED); break;
 						default: throw new IllegalArgumentException(Messages.UNRECOGNIZED_SYMBOL); 
-					}
+					} 
 				} else {
 					printer.print(Symbols.CLOSED);
 				}
@@ -58,21 +61,20 @@ public class InterfaceController implements IInterfaceController {
 			
 			printer.printLine("");
 		}
-		
-		
+			
 		if (gameEngine.isGameWon()) {
-			printer.printLine("You have won!");
+			printElapsedTime();
+			printer.printLine(Messages.GAME_WON);
 		} else if (gameEngine.isGameOver()) {
-			printer.printLine("You have lost!");
+			printElapsedTime();
+			printer.printLine(Messages.GAME_LOST);
+		} else {
+			printInfo();
 		}
 	}
 
 	@Override
-	public void parseCommand() {
-		if (gameEngine.isGameOver()) {
-			throw new IllegalArgumentException(Messages.FALTY_PARSE_GAME_OVER);
-		}
-		
+	public void parseCommand() {	
 		String command = "";  
 		int row = 0;
 		String column = "";
@@ -119,7 +121,7 @@ public class InterfaceController implements IInterfaceController {
 	}
 	
 	private void printHeader(int lengthRows, int lengthColumns) {
-		printer.clear(lengthRows*2);	
+		printer.clear(lengthRows*3);	
 		
 		printer.print("    ");
 		for (int i = 0; i < lengthColumns; i++) {
@@ -134,5 +136,26 @@ public class InterfaceController implements IInterfaceController {
 		}		
 		
 		printer.printLine("");	
+	}
+	
+	private void printElapsedTime() {
+		long ticks = timer.getElapsedTicks();
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(ticks);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(ticks) % 60;
+		
+		printer.printLine(String.format(Messages.ELAPSED_TIME, minutes, seconds));
+	}
+	
+	private void printCurrentTime() {
+		long ticks = timer.getElapsedTicks();
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(ticks);
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(ticks) % 60;
+		
+		printer.printLine(String.format(Messages.CURRENT_TIME, minutes, seconds));
+	}
+	
+	private void printInfo() {
+		printCurrentTime();
+		printer.printLine(String.format(Messages.USER_INFO, gameEngine.getCountOfClosed(), gameEngine.getCountOfFlags(), gameEngine.getCountOfBombs()));
 	}
 }

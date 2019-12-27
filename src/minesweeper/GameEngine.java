@@ -49,9 +49,44 @@ public class GameEngine implements IGameEngine {
 	}
 	
 	@Override
+	public int getCountOfFlags() {
+		int count = 0;
+		
+		for (int i = 0; i < flags.length; i++) {
+			for (int j = 0; j < flags[0].length; j++) {
+				if (flags[i][j]) {
+					count++;
+				}
+			}
+		}
+		
+		return count;
+	}
+	
+	@Override
+	public int getCountOfClosed() {
+		int count = 0;
+		
+		for (int i = 0; i < boardChecked.length; i++) {
+			for (int j = 0; j < boardChecked.length; j++) {
+				if (!boardChecked[i][j]) {
+					count++;
+				}
+			}
+		}
+		
+		return count;
+	}
+	
+	@Override
+	public int getCountOfBombs() {
+		return bombCount;	
+	}
+	
+	@Override
 	public void check(int row, int column) {
 		if (row < 0 || row >= rows || column < 0 || column >= columns) {
-			throw new IllegalArgumentException(Messages.INVALID_DATA);
+			return; //throw new IllegalArgumentException(Messages.INVALID_DATA);
 		}
 		
 		if (!boardChecked[row][column] && !flags[row][column]) {		
@@ -70,7 +105,7 @@ public class GameEngine implements IGameEngine {
 	@Override
 	public void flag(int row, int column) {
 		if (row < 0 || row >= rows || column < 0 || column >= columns) {
-			throw new IllegalArgumentException(Messages.INVALID_DATA);
+			return; //throw new IllegalArgumentException(Messages.INVALID_DATA);
 		}
 		
 		if (!boardChecked[row][column]) {
@@ -171,6 +206,7 @@ public class GameEngine implements IGameEngine {
 		return code == BoardCodes.BOMB;
 	}
 	
+	// Debug only.
 	private void setAllToChecked() {
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < columns; j++) {

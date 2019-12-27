@@ -10,4 +10,8 @@ public interface IGameEngine {
 	boolean[][]	getCheckedBoard();
 	boolean[][] getFlagsBoard();
 	int[][] getBoard();	
+	
+	int getCountOfFlags();
+	int getCountOfClosed();
+	int getCountOfBombs();
 }

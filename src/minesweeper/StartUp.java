@@ -7,7 +7,24 @@ public class StartUp {
 	public static void main(String[] args) {
 		IPrinter printer = new ConsolePrinter();
 		IReader reader = new ConsoleReader();
+		ITimer timer = new Timer();
 		IGameEngine gameEngine = null;
+		
+		startGame(printer, reader, gameEngine, timer);
+			
+		String choice = null;
+		while (true) {
+			printer.printLine(Messages.QUESTION_USER);
+			choice = reader.readInput();
+			if (choice.toLowerCase().equals("n")) {
+				return;
+			} else if (choice.toLowerCase().equals("y")) {
+				startGame(printer, reader, gameEngine, timer);
+			}
+		}
+	}
+
+	private static void startGame(IPrinter printer, IReader reader, IGameEngine gameEngine, ITimer timer) {
 		boolean isInputFalty = false;
 		
 		do {
@@ -46,8 +63,10 @@ public class StartUp {
 			}
 		} while (isInputFalty);
 		
-		IInterfaceController interfaceController = new InterfaceController(printer, reader ,gameEngine);
+		IInterfaceController interfaceController = new InterfaceController(printer, reader, gameEngine, timer);
 		IGameController gameController = new GameController(interfaceController);
+		
+		timer.start();
 		gameController.start();
 	}
 }
