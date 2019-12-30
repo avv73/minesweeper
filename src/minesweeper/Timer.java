@@ -22,4 +22,5 @@ public class Timer implements ITimer {
 		return elapsedTicks;
 	}
 	
+	
 }
