@@ -1,16 +1,23 @@
 package minesweeper;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.*;
 
 import minesweeper.constants.Messages;
 import minesweeper.contracts.*;
 
 public class StartUp {
+	private static final String LOG_FILE_PATH = "log.txt";
+	
 	public static void main(String[] args) {
 		IPrinter printer = new ConsolePrinter();
-		IPrinter filePrinter = new FilePrinter("log.txt");
+		IPrinter filePrinter = new FilePrinter(LOG_FILE_PATH);
 		
 		IReader reader = new ConsoleReader();
+		IReader fileReader = new FileParser(LOG_FILE_PATH);
+		
 		ITimer timer = new Timer();
 		IGameEngine gameEngine = null;
 		
@@ -92,6 +99,25 @@ public class StartUp {
 		
 		String content = String.format(Messages.FILE_STATS, difficulty, minutes, seconds);
 		filePrinter.printLine(content);
+	}
+	
+	private static void printHighscores(IReader fileReader) {
+		// TODO: Find solution here. Extracted info from file, but how to store and sort it?
+		String[] contents = fileReader.readInput().split(System.lineSeparator());
+		
+		String capturePattern = "(?<dif>[A-Za-z]+) (?<min>\\d+):(?<sec>\\d+)";
+		Map<String, Long> difficultyAndTime = new HashMap<String, Long>();
+		
+		Pattern r = Pattern.compile(capturePattern);
+		
+		for (String string : contents) {
+			Matcher m = r.matcher(string);
+			if (m.find()) {
+				String difficulty = m.group("dif");
+				int minutes = Integer.parseInt(m.group("min"));
+				int seconds = Integer.parseInt(m.group("sec"));
+			}
+		}
 	}
 }
 	
