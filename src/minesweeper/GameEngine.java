@@ -52,8 +52,8 @@ public class GameEngine implements IGameEngine {
 	public int getCountOfFlags() {
 		int count = 0;
 		
-		for (int i = 0; i < flags.length; i++) {
-			for (int j = 0; j < flags[0].length; j++) {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
 				if (flags[i][j]) {
 					count++;
 				}
@@ -67,8 +67,8 @@ public class GameEngine implements IGameEngine {
 	public int getCountOfClosed() {
 		int count = 0;
 		
-		for (int i = 0; i < boardChecked.length; i++) {
-			for (int j = 0; j < boardChecked[0].length; j++) {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
 				if (!boardChecked[i][j]) {
 					count++;
 				}
