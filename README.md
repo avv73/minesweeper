@@ -11,4 +11,4 @@ Implemented features:
 - [X] Show after each iteration actual game time, count of hidden cells, count of marked cells and count of mines.
 - [X] Ask user, after game is over, if wants to play again
 - [X] Store info about difficulty and game time in a file
-- [ ] Show at startup the best 5 results from previous games
+- [X] Show at startup the best 5 results for each difficulty from previous games
