@@ -11,7 +11,7 @@ public class GameEngine implements IGameEngine {
 	private boolean[][] boardChecked;
 	private boolean[][] flags;
 	
-	private int bombCount; // do I need this??
+	private int bombCount; 
 	private int rows;
 	private int columns;
 	
@@ -28,8 +28,8 @@ public class GameEngine implements IGameEngine {
 		
 		isGameOver = false;
 		
-		intializeBoard(rows, columns);
-		setBombs(bombCount);
+		intializeBoard();
+		setBombs();
 		setAdjacentCells();
 	}
 
@@ -131,7 +131,7 @@ public class GameEngine implements IGameEngine {
 		return true;
 	}
 	
-	private void intializeBoard(int rows, int columns) {
+	private void intializeBoard() {
 		board = new int[rows][];
 		boardChecked = new boolean[rows][];
 		flags = new boolean[rows][];
@@ -143,8 +143,8 @@ public class GameEngine implements IGameEngine {
 		}
 	}
 	
-	private void setBombs(int bombsCount) {
-		for (int i = 0; i < bombsCount; i++) {
+	private void setBombs() {
+		for (int i = 0; i < bombCount; i++) {
 			int row = rand.nextInt(rows);
 			int column = rand.nextInt(columns);
 			
