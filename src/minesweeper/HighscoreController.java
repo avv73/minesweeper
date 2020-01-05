@@ -62,10 +62,10 @@ public class HighscoreController implements IHighscoreController {
 			}
 		}
 		
-		List<IFileParseInfo> beginnerInfo = fileInfos.stream().filter(e -> e.getDifficulty().equals("beginner")).sorted().collect(Collectors.toList());
-		List<IFileParseInfo> advancedInfo = fileInfos.stream().filter(e -> e.getDifficulty().equals("advanced")).sorted().collect(Collectors.toList());
-		List<IFileParseInfo> professionalInfo = fileInfos.stream().filter(e -> e.getDifficulty().equals("professional")).sorted().collect(Collectors.toList());
-		List<IFileParseInfo> customInfo = fileInfos.stream().filter(e -> e.getDifficulty().equals("custom")).sorted().collect(Collectors.toList());
+		List<IFileParseInfo> beginnerInfo = sortLogsAboutDifficulty(fileInfos, "beginner");
+		List<IFileParseInfo> advancedInfo = sortLogsAboutDifficulty(fileInfos, "advanced");
+		List<IFileParseInfo> professionalInfo = sortLogsAboutDifficulty(fileInfos, "professional");
+		List<IFileParseInfo> customInfo = sortLogsAboutDifficulty(fileInfos, "custom");
 		
 		if (beginnerInfo.size() == 0 && advancedInfo.size() == 0 && professionalInfo.size() == 0 && customInfo.size() == 0) {
 			return;
@@ -92,5 +92,9 @@ public class HighscoreController implements IHighscoreController {
 			consolePrinter.printLine(String.format("	%d.    %d:%d", counter, currentInfo.getMinutes(), currentInfo.getSeconds()));
 			counter++;
 		}
+	}
+	
+	private List<IFileParseInfo> sortLogsAboutDifficulty(List<IFileParseInfo> logsInfo, String difficulty) {
+		return logsInfo.stream().filter(e -> e.getDifficulty().equals(difficulty)).sorted().collect(Collectors.toList());
 	}
 }
